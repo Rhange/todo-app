@@ -1,22 +1,51 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODO List</title>
-    <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Modern TODO</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+        integrity="sha512-SnH5WK+bZxgPHs44uWix+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkR4j8oTH0Q8B+XcVx0M0lWw0R8xkQ1L0Y9Q=="
+        crossorigin="anonymous"
+        referrerpolicy="no-referrer"
+    />
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="container">
-        <h1>📝 TODO List</h1>
-        
-        <div class="input-container">
-            <input type="text" id="todoInput" placeholder="할 일을 입력하세요..." />
-            <button id="addBtn">추가</button>
-        </div>
+    <main class="app-shell">
+        <section class="todo-card" aria-label="TODO 앱">
+            <header class="app-header">
+                <p class="badge"><i class="fa-solid fa-sparkles"></i> Focus Board</p>
+                <h1><i class="fa-solid fa-list-check"></i> TODO List</h1>
+                <p class="subtitle">오늘 할 일을 빠르게 정리하고 완료해보세요.</p>
+            </header>
 
-        <ul id="todoList"></ul>
-    </div>
+            <div class="input-container">
+                <label for="todoInput" class="sr-only">할 일 입력</label>
+                <div class="input-wrap">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                    <input type="text" id="todoInput" placeholder="예: 보고서 마무리하기" />
+                </div>
+                <button id="addBtn" type="button" aria-label="할 일 추가">
+                    <i class="fa-solid fa-plus"></i>
+                    <span>추가</span>
+                </button>
+            </div>
+
+            <ul id="todoList" aria-live="polite"></ul>
+
+            <div id="emptyState" class="empty-state" hidden>
+                <div class="empty-icon">🎉</div>
+                <p class="empty-title">모든 할 일을 완료했어요!</p>
+                <p class="empty-desc">새로운 TODO를 추가해 productive한 하루를 이어가세요.</p>
+            </div>
+        </section>
+    </main>
 
     <script src="app.js"></script>
 </body>

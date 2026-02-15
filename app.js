@@ -1,28 +1,23 @@
-// DOM 요소
 const todoInput = document.getElementById('todoInput');
 const addBtn = document.getElementById('addBtn');
 const todoList = document.getElementById('todoList');
+const emptyState = document.getElementById('emptyState');
 
-// 로컬 스토리지에서 TODO 불러오기
 let todos = JSON.parse(localStorage.getItem('todos')) || [];
 
-// 페이지 로드 시 TODO 렌더링
 renderTodos();
 
-// 추가 버튼 클릭
 addBtn.addEventListener('click', addTodo);
 
-// Enter 키로 추가
 todoInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         addTodo();
     }
 });
 
-// TODO 추가 함수
 function addTodo() {
     const text = todoInput.value.trim();
-    
+
     if (text === '') {
         alert('할 일을 입력하세요!');
         return;
@@ -30,28 +25,42 @@ function addTodo() {
 
     const todo = {
         id: Date.now(),
-        text: text,
+        text,
         completed: false
     };
 
     todos.push(todo);
     saveTodos();
     renderTodos();
-    
+
     todoInput.value = '';
     todoInput.focus();
 }
 
-// TODO 삭제 함수
 function deleteTodo(id) {
-    todos = todos.filter(todo => todo.id !== id);
+    const itemEl = todoList.querySelector(`[data-id="${id}"]`);
+
+    if (itemEl) {
+        itemEl.classList.add('removing');
+        itemEl.addEventListener(
+            'transitionend',
+            () => {
+                todos = todos.filter((todo) => todo.id !== id);
+                saveTodos();
+                renderTodos();
+            },
+            { once: true }
+        );
+        return;
+    }
+
+    todos = todos.filter((todo) => todo.id !== id);
     saveTodos();
     renderTodos();
 }
 
-// TODO 완료 토글 함수
 function toggleComplete(id) {
-    todos = todos.map(todo => {
+    todos = todos.map((todo) => {
         if (todo.id === id) {
             return { ...todo, completed: !todo.completed };
         }
@@ -61,40 +70,43 @@ function toggleComplete(id) {
     renderTodos();
 }
 
-// 로컬 스토리지에 저장
 function saveTodos() {
     localStorage.setItem('todos', JSON.stringify(todos));
 }
 
-// TODO 리스트 렌더링
 function renderTodos() {
     todoList.innerHTML = '';
 
     if (todos.length === 0) {
-        todoList.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">할 일이 없습니다.</p>';
+        emptyState.hidden = false;
         return;
     }
 
-    todos.forEach(todo => {
+    emptyState.hidden = true;
+
+    todos.forEach((todo) => {
         const li = document.createElement('li');
         li.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+        li.dataset.id = todo.id;
 
         li.innerHTML = `
-            <input 
-                type="checkbox" 
-                class="todo-checkbox" 
+            <input
+                type="checkbox"
+                class="todo-checkbox"
                 ${todo.completed ? 'checked' : ''}
                 onchange="toggleComplete(${todo.id})"
+                aria-label="완료 체크"
             />
             <span class="todo-text">${escapeHtml(todo.text)}</span>
-            <button class="delete-btn" onclick="deleteTodo(${todo.id})">삭제</button>
+            <button class="delete-btn" onclick="deleteTodo(${todo.id})" aria-label="삭제">
+                <i class="fa-regular fa-trash-can"></i>
+            </button>
         `;
 
         todoList.appendChild(li);
     });
 }
 
-// XSS 방지를 위한 HTML 이스케이프
 function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
